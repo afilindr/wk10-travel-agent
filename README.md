@@ -36,6 +36,23 @@ npm run dev              # http://localhost:5173 (proxies /api to :3001)
 
 Get keys: Gemini at https://aistudio.google.com/apikey, Tavily at https://app.tavily.com
 
+## Tracing with LangSmith
+Agent runs are traced to [LangSmith](https://smith.langchain.com). This includes every model call, tool call
+(web search, weather, saved preferences) and the token usage for each.
+
+1. Create an API key at https://smith.langchain.com/settings.
+2. In `server/.env`, set:
+   ```
+   LANGSMITH_TRACING=true
+   LANGSMITH_API_KEY=<your key>
+   LANGSMITH_PROJECT=wk10-travel-agent
+   ```
+3. Restart the server. It prints `LangSmith tracing ON` at startup.
+
+Each chat turn is recorded as a `travel-agent-chat` run tagged `travel-agent`. Each run carries
+`thread_id` as metadata, so all turns of one conversation appear together in the project's **Threads** tab.
+Set `LANGSMITH_TRACING=false` to turn tracing off.
+
 ## API
 - `POST /api/chat` `{ message, threadId }` returns `{ reply, toolsUsed, preferences }`
 - `GET /api/preferences/:threadId` returns `{ preferences }`
