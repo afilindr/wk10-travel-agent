@@ -1,0 +1,97 @@
+:root {
+  --bg: #f5f7fb;
+  --panel: #ffffff;
+  --text: #1d2433;
+  --muted: #6b7280;
+  --accent: #0f766e;
+  --accent-soft: #e6f4f1;
+  --user: #0f766e;
+  --border: #e5e7eb;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f141b;
+    --panel: #171d26;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
+    --accent: #2dd4bf;
+    --accent-soft: #12302d;
+    --user: #0f766e;
+    --border: #273040;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); }
+
+.layout { display: flex; height: 100vh; }
+.sidebar {
+  width: 280px; padding: 24px; background: var(--panel);
+  border-right: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px;
+  overflow-y: auto;
+}
+.sidebar h1 { margin: 0; font-size: 1.5rem; }
+.sidebar h2 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 20px 0 4px; }
+.tagline { margin: 0 0 12px; color: var(--muted); }
+.muted { color: var(--muted); font-size: .9rem; }
+.small { font-size: .75rem; margin-top: auto; }
+.new-chat {
+  padding: 10px; border-radius: 8px; border: 1px solid var(--accent);
+  background: transparent; color: var(--accent); cursor: pointer; font-weight: 600;
+}
+.new-chat:hover { background: var(--accent-soft); }
+.prefs { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.prefs li { background: var(--accent-soft); border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; }
+.prefs span { font-size: .75rem; color: var(--muted); text-transform: capitalize; }
+
+.chat { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.messages { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.welcome { margin: auto; text-align: center; max-width: 560px; }
+.welcome h2 { font-size: 2rem; margin-bottom: 4px; }
+.suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+.suggestions button {
+  padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--panel);
+  color: var(--text); cursor: pointer; text-align: left; font-size: .9rem;
+}
+.suggestions button:hover { border-color: var(--accent); }
+
+.msg { display: flex; flex-direction: column; max-width: 760px; }
+.msg.user { align-self: flex-end; align-items: flex-end; }
+.msg.assistant { align-self: flex-start; }
+.bubble { padding: 12px 16px; border-radius: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.msg.user .bubble { background: var(--user); color: #fff; border-bottom-right-radius: 4px; }
+.msg.assistant .bubble { background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.msg.error .bubble { border-color: #dc2626; }
+.bubble p:first-child { margin-top: 0; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble a { color: var(--accent); }
+.tools { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
+.chip { font-size: .72rem; background: var(--accent-soft); color: var(--accent); padding: 3px 8px; border-radius: 999px; }
+
+.typing { display: flex; gap: 4px; }
+.typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1.2s infinite; }
+.typing span:nth-child(2) { animation-delay: .2s; }
+.typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes blink { 0%, 80%, 100% { opacity: .2 } 40% { opacity: 1 } }
+
+.composer { display: flex; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); background: var(--panel); }
+.composer input {
+  flex: 1; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--bg); color: var(--text); font-size: 1rem;
+}
+.composer input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.composer button {
+  padding: 0 20px; border-radius: 10px; border: none; background: var(--accent); color: #fff;
+  font-weight: 600; cursor: pointer;
+}
+.composer button:disabled { opacity: .5; cursor: not-allowed; }
+
+@media (max-width: 720px) {
+  .layout { flex-direction: column; }
+  .sidebar { width: 100%; max-height: 35vh; border-right: none; border-bottom: 1px solid var(--border); padding: 16px; }
+  .messages { padding: 16px; }
+  .composer { padding: 12px 16px; }
+  .suggestions { grid-template-columns: 1fr; }
+}

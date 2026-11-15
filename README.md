@@ -1,0 +1,41 @@
+# Wanderlust: LangChain Travel Agent
+
+A conversational travel assistant built with **LangChain.js** (`createAgent`), **Gemini `gemini-3.1-flash-lite`**,
+an **Express** backend and a **React + Vite** chat UI.
+
+## Features
+| Requirement | Implementation |
+|---|---|
+| Chatbot interface | `client/src/App.jsx`: chat UI with Markdown replies, tool-usage chips, a preferences sidebar |
+| Gemini LLM | `ChatGoogleGenerativeAI` with `gemini-3.1-flash-lite` (`server/src/agent.js`) |
+| Web Search (Tavily) | `TavilySearch` tool named `web_search`, used for any travel query |
+| Weather (wttr) | `weather_lookup` tool calling `https://wttr.in/<city>?format=j1` |
+| In-memory checkpointer | `MemorySaver` keyed by `thread_id`. Stores the conversation and a `preferences` state field |
+
+### How preferences are stored
+- The agent state is extended with `preferences: Record<string,string>`.
+- When the user mentions a lasting preference (budget, home city, diet…), the agent calls
+  `save_user_preference`, which returns a LangGraph `Command` that updates `preferences` in state.
+- The `MemorySaver` checkpointer saves that state per `thread_id`, so it carries over to later turns.
+- A middleware adds the saved preferences to the system prompt on every model call.
+- The data lives in memory only, so restarting the server clears it.
+
+## Setup
+```bash
+# 1. Backend
+cd server
+npm install
+cp .env.example .env     # add GOOGLE_API_KEY and TAVILY_API_KEY
+npm run dev              # http://localhost:3001
+
+# 2. Frontend (new terminal)
+cd client
+npm install
+npm run dev              # http://localhost:5173 (proxies /api to :3001)
+```
+
+Get keys: Gemini at https://aistudio.google.com/apikey, Tavily at https://app.tavily.com
+
+## API
+- `POST /api/chat` `{ message, threadId }` returns `{ reply, toolsUsed, preferences }`
+- `GET /api/preferences/:threadId` returns `{ preferences }`
