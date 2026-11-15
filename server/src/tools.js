@@ -4,7 +4,9 @@ import { TavilySearch } from "@langchain/tavily";
 import { z } from "zod";
 
 // 1. Web search (Tavily) — used for any travel-related query.
-export const webSearch = new TavilySearch({
+// A factory, so the Tavily API key is only required when the real agent is built.
+export const createWebSearch = () =>
+  new TavilySearch({
   maxResults: 5,
   topic: "general",
   name: "web_search",
@@ -12,7 +14,7 @@ export const webSearch = new TavilySearch({
     "Search the web for up-to-date travel information: destinations, attractions, flights, " +
     "hotels, visas, local events, transport, costs, safety advisories and itineraries. " +
     "Use this for ANY travel-related question.",
-});
+  });
 
 // 2. Weather lookup (wttr.in) — current conditions + 3-day forecast for a city.
 export const weatherLookup = tool(

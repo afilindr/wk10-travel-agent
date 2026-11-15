@@ -53,6 +53,18 @@ Each chat turn is recorded as a `travel-agent-chat` run tagged `travel-agent`. E
 `thread_id` as metadata, so all turns of one conversation appear together in the project's **Threads** tab.
 Set `LANGSMITH_TRACING=false` to turn tracing off.
 
+## Tests
+Integration tests for the API live in `server/tests`. They use Vitest and supertest.
+```bash
+cd server
+npm test            # single run
+npm run test:watch  # watch mode
+```
+The tests run the real agent graph, checkpointer, preferences middleware and `save_user_preference` tool. Outside services are replaced, so no API keys or network access are needed:
+- Gemini is replaced by a scripted chat model (`tests/helpers/scriptedModel.js`). It returns preset replies and tool calls, and records the prompts it receives.
+- Tavily is replaced by a fake `web_search` tool.
+- wttr.in is replaced by a stubbed `fetch`.
+
 ## API
 - `POST /api/chat` `{ message, threadId }` returns `{ reply, toolsUsed, preferences }`
 - `GET /api/preferences/:threadId` returns `{ preferences }`

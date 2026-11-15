@@ -2,16 +2,7 @@ import { createAgent, createMiddleware } from "langchain";
 import { MemorySaver } from "@langchain/langgraph";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { z } from "zod";
-import { webSearch, weatherLookup, saveUserPreference } from "./tools.js";
-
-const model = new ChatGoogleGenerativeAI({
-  model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
-  apiKey: process.env.GOOGLE_API_KEY,
-  temperature: 0.4,
-});
-
-// In-memory checkpointer: keeps the conversation and user preferences per thread_id.
-export const checkpointer = new MemorySaver();
+import { createWebSearch, weatherLookup, saveUserPreference } from "./tools.js";
 
 const stateSchema = z.object({
   preferences: z.record(z.string(), z.string()).default({}),
@@ -46,10 +37,27 @@ const preferencesPrompt = createMiddleware({
   },
 });
 
-export const agent = createAgent({
-  model,
-  tools: [webSearch, weatherLookup, saveUserPreference],
-  stateSchema,
-  checkpointer,
-  middleware: [preferencesPrompt],
-});
+const createDefaultModel = () =>
+  new ChatGoogleGenerativeAI({
+    model: process.env.GEMINI_MODEL || "gemini-3.1-flash-lite",
+    apiKey: process.env.GOOGLE_API_KEY,
+    temperature: 0.4,
+  });
+
+/**
+ * Build the travel agent. Every dependency can be overridden (used by the tests).
+ * The in-memory MemorySaver checkpointer keeps the conversation and user preferences per thread_id.
+ */
+export function createTravelAgent({
+  model = createDefaultModel(),
+  tools = [createWebSearch(), weatherLookup, saveUserPreference],
+  checkpointer = new MemorySaver(),
+} = {}) {
+  return createAgent({
+    model,
+    tools,
+    stateSchema,
+    checkpointer,
+    middleware: [preferencesPrompt],
+  });
+}
